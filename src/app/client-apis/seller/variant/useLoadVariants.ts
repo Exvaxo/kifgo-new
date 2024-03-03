@@ -6,9 +6,14 @@ const useLoadVariants = () => {
   return useQuery({
     queryKey: ["use-load-variants"],
     queryFn: async () => {
-      const variants = (await loadVariants()) as unknown as AvailableVariant[];
-      console.log({ variants });
-      return variants;
+      try {
+        const variants =
+          (await loadVariants()) as unknown as AvailableVariant[];
+        console.log({ variants });
+        return variants;
+      } catch (error) {
+        console.log({ error });
+      }
     },
     retry: 1,
   });
