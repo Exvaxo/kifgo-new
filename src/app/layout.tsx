@@ -25,12 +25,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.className}`}>
-      <SpeedInsights />
-      <Analytics />
+      <body className={`overflow-hidden`}>
+        <SpeedInsights />
+        <Analytics />
 
-      <ContextProvider>
-        <QueryProvider>
-          <body className={`overflow-hidden`}>
+        <ContextProvider>
+          <QueryProvider>
             <Suspense>
               <NextTopLoader
                 color="#cd0a5d"
@@ -58,9 +58,9 @@ export default function RootLayout({
               ></div>
               <div className="">{children}</div>
             </Suspense>
-          </body>
-        </QueryProvider>
-      </ContextProvider>
+          </QueryProvider>
+        </ContextProvider>
+      </body>
     </html>
   );
 }
