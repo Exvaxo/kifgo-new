@@ -1,0 +1,580 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type Address {
+  addressLine1 String
+  addressLine2 String?
+}
+
+type Phone {
+  countryCode String
+  number      String
+}
+
+enum Role {
+  USER
+  ADMIN
+  SELLER
+}
+
+enum SellerType {
+  INDIVIDUAL
+  BUSINESS
+}
+
+enum IdentifyVerificationType {
+  PASSPORT
+  NIC
+  DRIVING_LICENSE
+}
+
+type IdentityVerification {
+  type  IdentifyVerificationType
+  value String
+  proof String[]
+}
+
+enum UserStatus {
+  ACTIVE
+  HOLD
+  SUSPEND
+}
+
+model User {
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  uid    String?
+  role   Role       @default(USER)
+  status UserStatus @default(ACTIVE)
+
+  photoURL      String?
+  firstName     String?
+  lastName      String?
+  email         String    @unique
+  dob           DateTime?
+  about         String?
+  contactNumber Phone?
+
+  //location
+  address              Address?
+  city                 String?
+  postalCode           String?
+  province             String?
+  country              String?
+  isOnBoardingComplete Boolean? @default(false)
+
+  emailVerified        Boolean               @default(false)
+  addressVerified      Boolean               @default(false)
+  phoneVerified        Boolean               @default(false)
+  identityVerification IdentityVerification?
+  Otp                  Otp[]
+
+  shipping_profiles Shipping[]
+  policies          Policy[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Shop      Shop[]
+}
+
+enum OtpType {
+  EMAIL
+  RESET_PASSWORD
+}
+
+model Otp {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  otp      Int
+  type     OtpType  @default(EMAIL)
+  expiry   DateTime
+  resendIn DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
+}
+
+type File {
+  name String?
+}
+
+type FirebaseMedia {
+  url  String
+  ref  String?
+  file File?
+}
+
+type Image {
+  highRes FirebaseMedia
+  lowRes  FirebaseMedia
+  alt     String?
+}
+
+type Personalization {
+  isPersonalization Boolean @default(false)
+  prompt            String?
+  isOptional        Boolean @default(false)
+}
+
+type AboutProduct {
+  title           String
+  showSku         Boolean          @default(false)
+  sku             String?
+  images          Image[]
+  thumbnail       Image
+  video           FirebaseMedia?
+  description     String
+  personalization Personalization?
+}
+
+type VolumePricing {
+  quantity String?
+  discount String?
+}
+
+type ProductPricing {
+  isGlobalPricing Boolean         @default(false)
+  isVolumePricing Boolean         @default(false)
+  srilanka        String?
+  global          String?
+  quantity        String?
+  volumePricing   VolumePricing[]
+}
+
+model ProductAttribute {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+  attributeId String    @db.ObjectId
+
+  unit   Unit?   @relation(fields: [unitId], references: [id])
+  unitId String? @db.ObjectId
+
+  value            String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  ProductDetails   ProductDetails? @relation(fields: [productDetailsId], references: [id])
+  productDetailsId String?         @db.ObjectId
+}
+
+model ProductDetails {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  type             String
+  whoMadeIt        String
+  whatIsIt         String
+  whenDidYouMakeIt String
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String   @db.ObjectId
+
+  attributes ProductAttribute[]
+
+  tags      String[]
+  materials String[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+type VariantSettings {
+  price    Boolean @default(false)
+  quantity Boolean @default(false)
+  sku      Boolean @default(false)
+}
+
+type VariantPricing {
+  srilanka String
+  global   String?
+}
+
+model ProductVariation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  variationId String   @unique
+  Product     Product? @relation(fields: [productId], references: [id])
+  productId   String?  @db.ObjectId
+
+  isGroup    Boolean @default(false)
+  isSelected Boolean @default(false)
+  visibility Boolean @default(false)
+
+  variantSettings VariantSettings
+
+  sku String?
+
+  pricing VariantPricing?
+
+  quantity Int?
+  sold     Int?
+
+  combination Combination[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductShipping {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  shipping  Shipping  @relation(fields: [profile], references: [id])
+  profile   String    @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+model ProductSettings {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  policy   Policy @relation(fields: [policyId], references: [id])
+  policyId String @db.ObjectId
+
+  section   String?
+  featured  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  shopId String? @db.ObjectId
+  Shop   Shop?   @relation(fields: [shopId], references: [id])
+
+  about AboutProduct
+
+  pricing ProductPricing
+
+  details ProductDetails @relation(fields: [productDetailsId], references: [id])
+
+  variation ProductVariation[]
+
+  shipping          ProductShipping @relation(fields: [productShippingId], references: [id])
+  productShippingId String          @db.ObjectId
+
+  policy   Policy @relation(fields: [policyId], references: [id])
+  policyId String @db.ObjectId
+
+  settings          ProductSettings @relation(fields: [productSettingsId], references: [id])
+  productSettingsId String          @db.ObjectId
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  Shipping         Shipping? @relation(fields: [shippingId], references: [id])
+  shippingId       String?   @db.ObjectId
+  productDetailsId String    @db.ObjectId
+}
+
+enum DisplayAs {
+  INPUT
+  SELECT
+  RADIO
+  CHECKBOX
+}
+
+model Unit {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name    String
+  si_unit String?
+
+  Variants   Variant[] @relation(fields: [variantIds], references: [id])
+  variantIds String[]  @db.ObjectId
+
+  Attribute    Attribute[] @relation(fields: [attributeIds], references: [id])
+  attributeIds String[]    @db.ObjectId
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ProductAttribute ProductAttribute[]
+}
+
+model Variant {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name      String
+  units     Unit[]          @relation(fields: [unitIds], references: [id])
+  unitIds   String[]        @db.ObjectId
+  displayAs DisplayAs
+  options   VariantOption[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VariantOption {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  value String
+  unit  String?
+
+  Variant   Variant? @relation(fields: [variantId], references: [id])
+  variantId String?  @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+type Combination {
+  variant    String
+  variantId  String
+  value      String
+  unit       String?
+  isEditable Boolean @default(false)
+}
+
+model Category {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  parentId      String?    @db.ObjectId
+  parent        Category?  @relation("parent_child", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subCategories Category[] @relation("parent_child")
+
+  title       String
+  description String?
+  tags        String[]
+
+  attributes   Attribute[] @relation(fields: [attributeIds], references: [id])
+  attributeIds String[]    @db.ObjectId
+
+  createdAt      DateTime?        @default(now())
+  updatedAt      DateTime?        @updatedAt
+  ProductDetails ProductDetails[]
+
+  @@fulltext([title, description])
+}
+
+model AttributeOptions {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name String
+
+  attribute   Attribute? @relation(fields: [attributeId], references: [id])
+  attributeId String?    @db.ObjectId
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Attribute {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name        String
+  priority    Int?               @default(0)
+  displayAs   DisplayAs
+  description String?
+  options     AttributeOptions[]
+  isOptional  Boolean            @default(true)
+  Units       Unit[]             @relation(fields: [unitIds], references: [id])
+  unitIds     String[]           @db.ObjectId
+
+  categoryIds String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIds], references: [id])
+
+  createdAt        DateTime?          @default(now())
+  updatedAt        DateTime?          @updatedAt
+  ProductAttribute ProductAttribute[]
+}
+
+enum ProcessingTime {
+  DAYS
+  WEEKS
+}
+
+enum ShippingCharge {
+  FREE
+  FIXED
+}
+
+type ProcessingTimeType {
+  value String
+  type  ProcessingTime
+  min   String
+  max   String
+}
+
+type DeliveryTime {
+  min String
+  max String
+}
+
+type ChargeType {
+  type            ShippingCharge
+  one_item        String?
+  additional_item String?
+}
+
+type StandardShippingType {
+  country          String
+  shipping_service String
+  delivery_time    DeliveryTime
+  charge           ChargeType
+}
+
+model Shipping {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name               String
+  country_of_origin  String
+  origin_postal_code String
+  processing_time    ProcessingTimeType
+  standard_shipping  StandardShippingType[]
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+
+  Product         Product[]
+  ProductShipping ProductShipping[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+type ReturnsType {
+  timeframe            String
+  returnShippingPaidBy String
+  refundMethod         String
+}
+
+model Policy {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  title       String
+  description String?
+
+  isDomesticReturns Boolean      @default(false)
+  domesticReturns   ReturnsType?
+
+  isInternationalReturns Boolean      @default(false)
+  internationalReturns   ReturnsType?
+
+  Product Product[]
+  User    User?     @relation(fields: [userId], references: [id])
+  userId  String?   @db.ObjectId
+
+  createdAt       DateTime?         @default(now())
+  updatedAt       DateTime?         @updatedAt
+  ProductSettings ProductSettings[]
+}
+
+type PersonalInformation {
+  countryOfResidence String
+  firstName          String
+  lastName           String
+  dateOfBirth        DateTime?
+  nationality        String
+  nic                String
+}
+
+type BusinessInformation {
+  businessType               String?
+  nameOfLegalEntity          String
+  businessRegistrationNumber String
+}
+
+type ShopOwnerAddress {
+  country       String
+  streetAddress String
+  other         String?
+  city          String
+  postalCode    String
+  state         String
+  phone         Phone
+}
+
+type ShopOwner {
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime?
+  nic         String
+  address     ShopOwnerAddress
+}
+
+type TaxPayerAddress {
+  streetAddress       String
+  other               String?
+  city                String
+  postalCode          String
+  state               String
+  businessPhoneNumber Phone
+}
+
+type BusinessAddress {
+  country             String
+  streetAddress       String
+  other               String?
+  city                String
+  postalCode          String
+  state               String
+  businessPhoneNumber Phone
+}
+
+type BankInformation {
+  fullNameOnAccount String
+  accountNumber     String
+  swift_bic         String
+
+  name  String
+  city  String
+  state String
+}
+
+type IndividualSeller {
+  personalInformation PersonalInformation
+  taxPayerAddress     TaxPayerAddress
+}
+
+type BusinessSeller {
+  businessInformation BusinessInformation
+  businessAddress     BusinessAddress
+  primaryOwner        ShopOwner
+  additionalOwners    ShopOwner[]
+}
+
+type HowYouWillGetPaid {
+  bankLocation String
+  typeOfSeller SellerType
+
+  individual IndividualSeller?
+  business   BusinessSeller?
+
+  bankInformation BankInformation
+}
+
+type BillingAddress {
+  country       String
+  streetAddress String
+  other         String?
+  city          String
+  postalCode    String
+  state         String
+}
+
+type SetUpBilling {
+  billingAddress BillingAddress
+}
+
+model Shop {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  name              String
+  products          Product[]
+  howYouWillGetPaid HowYouWillGetPaid
+  setUpBilling      SetUpBilling
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
