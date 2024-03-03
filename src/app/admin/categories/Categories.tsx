@@ -53,7 +53,7 @@ const Categories = ({ categories }: ICategories) => {
 
   const addAnotherCategory = async (id: string | null) => {
     const updatedCategories: Category[] = JSON.parse(
-      JSON.stringify(_categories),
+      JSON.stringify(_categories)
     );
 
     const created_category = await createCategory(id);
@@ -88,7 +88,7 @@ const Categories = ({ categories }: ICategories) => {
               id="error_delete_cat"
               title="Failed"
               body={`${category.title} is in use, so cannot be deleted.`}
-            />,
+            />
           );
           break;
         }
@@ -110,7 +110,7 @@ const Categories = ({ categories }: ICategories) => {
 
   const [attributeSearchTerm, setAttributeSearchTerm] = useState("");
 
-  const { data: attributes, isLoading: isAttributesLoading } =
+  const { data: attributes, isPending: isAttributesLoading } =
     useFetchAttributes(attributeSearchTerm);
 
   const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
@@ -124,12 +124,12 @@ const Categories = ({ categories }: ICategories) => {
       setSelectedAttributes(
         (pv) =>
           categories?.find((cat) => cat.id === categoryToChooseAttribution)
-            ?.attributeIds || [],
+            ?.attributeIds || []
       );
     }
   }, [categoryToChooseAttribution, categories]);
 
-  const { mutateAsync: updateAttributes, isLoading: isUpdateAttributeLoading } =
+  const { mutateAsync: updateAttributes, isPending: isUpdateAttributeLoading } =
     useUpdateAttribute();
 
   return (
@@ -138,7 +138,7 @@ const Categories = ({ categories }: ICategories) => {
         open={!!categoryToChooseAttribution}
         onOpenChange={(open) =>
           setCategoryToChooseAttribution(
-            !open ? null : categoryToChooseAttribution,
+            !open ? null : categoryToChooseAttribution
           )
         }
         className="max-w-screen-lg"
@@ -170,7 +170,7 @@ const Categories = ({ categories }: ICategories) => {
               Attributes for{" "}
               {
                 categories?.find(
-                  (cat) => cat.id === categoryToChooseAttribution,
+                  (cat) => cat.id === categoryToChooseAttribution
                 )?.title
               }
             </Modal.Title>
@@ -464,7 +464,7 @@ const CategoryEl = ({
                 id="success_cat_name"
                 title="Success"
                 body="Category name has been updated."
-              />,
+              />
             );
           }}
           {...register}
@@ -708,7 +708,7 @@ const InputWithSave = forwardRef<HTMLInputElement, IInputWithSave>(
         {...rest}
       />
     );
-  },
+  }
 );
 
 InputWithSave.displayName = "InputWithSave";

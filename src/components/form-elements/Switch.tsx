@@ -44,14 +44,12 @@ const Switch = forwardRef<HTMLLabelElement, ISwitch>(
     const id = useId();
     let field: ControllerRenderProps<FieldValues, string> | null = null;
 
-    if (control) {
-      const controller = useController({
-        name,
-        control,
-      });
+    const controller = useController({
+      name,
+      control,
+    });
 
-      field = controller.field;
-    }
+    field = controller.field;
 
     return (
       <div className={cn(`flex items-center gap-2`, className)}>

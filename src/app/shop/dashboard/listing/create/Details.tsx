@@ -65,7 +65,10 @@ const Details = forwardRef<HTMLElement>(({}, ref) => {
   );
 
   useEffect(() => {
-    if (attrs) {
+    if (
+      attrs &&
+      (!watch("details.attributes") || watch("details.attributes")?.length <= 0)
+    ) {
       const attributes = JSON.parse(
         JSON.stringify(
           attrs.map((attr) => ({ attributeId: attr.id, value: "" }))
@@ -83,7 +86,7 @@ const Details = forwardRef<HTMLElement>(({}, ref) => {
         setValue("details.attributes", attributes);
       }
     }
-  }, [attrs]);
+  }, [attrs, watch("details.attributes")]);
 
   const attributesArray = useFieldArray({
     control: control,
@@ -437,7 +440,7 @@ const Details = forwardRef<HTMLElement>(({}, ref) => {
               );
 
               return (
-                <Fragment key={field.id}>
+                <Fragment key={field.id + watch("details.attributes")}>
                   {attribute?.displayAs === "INPUT" && (
                     <div className="w-full">
                       <div className="flex w-full flex-col items-center justify-start gap-5 md:max-w-sm md:flex-row">

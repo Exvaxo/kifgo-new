@@ -175,9 +175,8 @@ const Shipping = forwardRef<HTMLElement, IShippingProfile>(({}, ref) => {
                                 Shipping Options
                               </Modal.Title>
                               <Modal.Description className="mt-1 text-xs text-gray-600">
-                                List all the shipping options you offer. Buyers
-                                can see them all and select what they prefer
-                                while purchasing.
+                                List all the options you offer. Buyers will see
+                                them in the order they are here.
                               </Modal.Description>
                             </div>
                           </div>

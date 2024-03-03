@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 import Tabs from "./Tabs";
 import { Avatar } from "@/components/Avatar";
 import Sidebar from "./Sidebar";
@@ -95,7 +95,9 @@ const layout = ({ children }: { children: React.ReactNode }) => {
           <div className="mx-auto mt-5 flex h-full w-full max-w-screen-lg flex-col items-start justify-between px-5 md:mt-10 md:flex-row lg:px-0">
             {/* sidebar */}
             <aside className="">
-              <Sidebar />
+              <Suspense>
+                <Sidebar />
+              </Suspense>
             </aside>
             {/* sidebar */}
 

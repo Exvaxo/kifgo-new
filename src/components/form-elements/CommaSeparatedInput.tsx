@@ -69,22 +69,20 @@ const CommaSeparatedInput = forwardRef(
       onChangeHandler,
       ...rest
     }: ICommaSeparatedInput,
-    ref: React.LegacyRef<HTMLInputElement>,
+    ref: React.LegacyRef<HTMLInputElement>
   ) => {
     let field: ControllerRenderProps<FieldValues, string> | null = null;
 
-    if (control) {
-      const controller = useController({
-        name,
-        control,
-      });
+    const controller = useController({
+      name,
+      control,
+    });
 
-      field = controller.field;
-    }
+    field = controller.field;
 
     const [value, setValue] = useState<string>("");
     const [chips, setChips] = useState<string[]>(
-      isValid(field?.value) && field ? field.value : [],
+      isValid(field?.value) && field ? field.value : []
     );
 
     const id = useId();
@@ -115,7 +113,7 @@ const CommaSeparatedInput = forwardRef(
       } else {
         setChips((pv) =>
           //@ts-ignore
-          [...pv, e.target.value.split(",")[0]],
+          [...pv, e.target.value.split(",")[0]]
         );
         setValue("");
       }
@@ -138,7 +136,7 @@ const CommaSeparatedInput = forwardRef(
         if (isValid(value)) {
           setChips((pv) =>
             //@ts-ignore
-            [...pv, e.target.value.split(",")[0]],
+            [...pv, e.target.value.split(",")[0]]
           );
           setValue("");
         }
@@ -149,7 +147,7 @@ const CommaSeparatedInput = forwardRef(
       if (isValid(value)) {
         setChips((pv) =>
           //@ts-ignore
-          [...pv, value.split(",")[0]],
+          [...pv, value.split(",")[0]]
         );
         setValue("");
       }
@@ -326,7 +324,7 @@ const CommaSeparatedInput = forwardRef(
         </motion.div>
       </div>
     );
-  },
+  }
 );
 
 CommaSeparatedInput.displayName = "CommaSeparatedInput";

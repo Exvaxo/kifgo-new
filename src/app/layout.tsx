@@ -31,13 +31,15 @@ export default function RootLayout({
       <ContextProvider>
         <QueryProvider>
           <body className={`overflow-hidden`}>
-            <NextTopLoader
-              color="#cd0a5d"
-              zIndex={99999999999999999}
-              crawl={true}
-              showSpinner={false}
-              height={4}
-            />
+            <Suspense>
+              <NextTopLoader
+                color="#cd0a5d"
+                zIndex={99999999999999999}
+                crawl={true}
+                showSpinner={false}
+                height={4}
+              />
+            </Suspense>
             <Suspense fallback={<Loading />}>
               <div className="relative z-[9999999999999999999]">
                 <AlertContainer />

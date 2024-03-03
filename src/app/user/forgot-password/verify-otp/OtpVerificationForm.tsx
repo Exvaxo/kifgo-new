@@ -40,7 +40,7 @@ const OtpVerificationForm = () => {
       const index = `_${currentFocusIndex}` as keyof typeof code;
       document
         .getElementById(
-          `block_${Math.min(currentFocusIndex + 1, NUMBER_OF_FIELDS - 1)}`,
+          `block_${Math.min(currentFocusIndex + 1, NUMBER_OF_FIELDS - 1)}`
         )
         ?.focus();
       if (error) setError("");
@@ -66,7 +66,7 @@ const OtpVerificationForm = () => {
 
   useEffect(() => {
     const isAllFilled = Object.values(code).every((value: string) =>
-      isValid(value),
+      isValid(value)
     );
     if (isAllFilled) {
       handleSubmit();
@@ -93,7 +93,7 @@ const OtpVerificationForm = () => {
         {
           otp,
           id: searchParams.get("id"),
-        },
+        }
       );
 
       if (data) {
@@ -119,7 +119,7 @@ const OtpVerificationForm = () => {
 
   const {
     data: lastOtpTime,
-    isLoading: isTimerLoading,
+    isPending: isTimerLoading,
     refetch: refetchTimer,
   } = useGetResetPasswordOtpTimer();
 
@@ -135,7 +135,7 @@ const OtpVerificationForm = () => {
     }
   }, [timer]);
 
-  const { mutateAsync: sendEmail, isLoading: isSendEmailLoading } =
+  const { mutateAsync: sendEmail, isPending: isSendEmailLoading } =
     useSendVerificationEmail();
 
   return (

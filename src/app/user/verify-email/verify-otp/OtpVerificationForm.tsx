@@ -11,7 +11,7 @@ import useIsTouchDevice from "@/hooks/useIsTouchDevice";
 import fetcher from "@/utilities/fetcher";
 import isValid from "@/utilities/isValid";
 import { differenceInSeconds } from "date-fns";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const OtpVerificationForm = () => {
@@ -30,7 +30,6 @@ const OtpVerificationForm = () => {
   });
   const [currentFocusIndex, setCurrentFocusIndex] = useState(0);
 
-  let searchParams = useSearchParams();
   const router = useRouter();
 
   const handleInput = (num: string) => {
@@ -40,7 +39,7 @@ const OtpVerificationForm = () => {
       const index = `_${currentFocusIndex}` as keyof typeof code;
       document
         .getElementById(
-          `block_${Math.min(currentFocusIndex + 1, NUMBER_OF_FIELDS - 1)}`,
+          `block_${Math.min(currentFocusIndex + 1, NUMBER_OF_FIELDS - 1)}`
         )
         ?.focus();
       if (error) setError("");
@@ -66,7 +65,7 @@ const OtpVerificationForm = () => {
 
   useEffect(() => {
     const isAllFilled = Object.values(code).every((value: string) =>
-      isValid(value),
+      isValid(value)
     );
     if (isAllFilled) {
       handleSubmit();
@@ -116,7 +115,7 @@ const OtpVerificationForm = () => {
 
   const {
     data: lastOtpTime,
-    isLoading: isTimerLoading,
+    isPending: isTimerLoading,
     refetch: refetchTimer,
   } = useGetEmailOtpTimer();
 
@@ -132,7 +131,7 @@ const OtpVerificationForm = () => {
     }
   }, [timer]);
 
-  const { mutateAsync: sendEmail, isLoading: isSendEmailLoading } =
+  const { mutateAsync: sendEmail, isPending: isSendEmailLoading } =
     useSendVerificationEmail();
 
   return (

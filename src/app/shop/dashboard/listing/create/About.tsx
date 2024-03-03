@@ -190,9 +190,11 @@ const About = forwardRef<HTMLElement, IAbout>(({}, ref) => {
 
                         setValue("about.thumbnail.highRes.file", undefined);
                         setValue("about.thumbnail.highRes.url", "");
+                        setValue("about.thumbnail.highRes.ref", "");
 
                         setValue("about.thumbnail.lowRes.file", undefined);
                         setValue("about.thumbnail.lowRes.url", "");
+                        setValue("about.thumbnail.lowRes.ref", "");
                       }}
                       variant={"danger"}
                       className={"aspect-square p-0 md:p-0"}

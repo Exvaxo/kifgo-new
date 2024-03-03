@@ -76,14 +76,12 @@ const FileInput = ({
 }: IFileInput) => {
   let field: ControllerRenderProps<FieldValues, string> | null = null;
 
-  if (control) {
-    const controller = useController({
-      name,
-      control,
-    });
+  const controller = useController({
+    name,
+    control,
+  });
 
-    field = controller.field;
-  }
+  field = controller.field;
 
   const [files, setFiles] = useState<(File & { ref?: any; url?: any })[]>([]);
 
@@ -114,7 +112,7 @@ const FileInput = ({
             />,
             {
               toastId: "too_many_files",
-            },
+            }
           );
         }
         files = files.splice(0, maxFiles);
@@ -135,7 +133,7 @@ const FileInput = ({
               id="duplicate file"
               body={rejectedFiles.errors[0].message}
               title="Duplicate file."
-            />,
+            />
           );
           return;
         } else if (rejectedFiles.errors[0].code === "file_too_large") {
@@ -144,7 +142,7 @@ const FileInput = ({
               id="file_too_large"
               body={rejectedFiles.errors[0].message}
               title="File too large."
-            />,
+            />
           );
         } else if (rejectedFiles.errors[0].code === "too-many-files") {
           toast(
@@ -152,7 +150,7 @@ const FileInput = ({
               id="too-many-files"
               body={rejectedFiles.errors[0].message}
               title="File limit exceeded."
-            />,
+            />
           );
         } else {
           toast(
@@ -160,12 +158,12 @@ const FileInput = ({
               id="invalid_file_type"
               body={rejectedFiles.errors[0].message}
               title="Invalid file type."
-            />,
+            />
           );
         }
       });
     },
-    [],
+    []
   );
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -183,7 +181,7 @@ const FileInput = ({
         return {
           code: "file_too_large",
           message: `File is too large, The maximum file size allowed is ${maxFileSizeInMB.toFixed(
-            2,
+            2
           )}MB`,
         };
       }

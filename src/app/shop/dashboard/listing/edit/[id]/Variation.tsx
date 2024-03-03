@@ -88,7 +88,7 @@ const Variation = forwardRef<HTMLElement, IVariants>(({}, ref) => {
       const variation = watch("variation");
       const variantMap: { [x: string]: AvailableVariants } = {};
 
-      if (variation) {
+      if (variation && variation.length > 0) {
         variation.forEach((variant) => {
           variant.combination.forEach((comb) => {
             let options: VariantOption[] = [];
@@ -134,6 +134,9 @@ const Variation = forwardRef<HTMLElement, IVariants>(({}, ref) => {
 
         setAvailableVariants(availableVariants);
 
+        setIsAvailableVariantSet(true);
+      } else {
+        setAvailableVariants([createAvailableVariant()]);
         setIsAvailableVariantSet(true);
       }
     }

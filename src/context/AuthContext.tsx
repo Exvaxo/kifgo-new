@@ -130,7 +130,7 @@ export default function AuthContextProvider({ children }: any) {
       await fetcher().post("/user/login");
       router.refresh();
       router.push(
-        searchParams.get("callback") ? searchParams.get("callback")! : "/",
+        searchParams.get("callback") ? searchParams.get("callback")! : "/"
       );
     } catch (error: any) {
       if (error.code === "auth/invalid-login-credentials") {
@@ -198,7 +198,7 @@ export default function AuthContextProvider({ children }: any) {
       const { user } = await createUserWithEmailAndPassword(
         auth,
         email,
-        password,
+        password
       );
 
       await fetcher().post("/user/register", {

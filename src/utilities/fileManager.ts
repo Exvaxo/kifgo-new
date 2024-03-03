@@ -11,13 +11,14 @@ export const upload = async (
   files: File[] | Blob[],
   path: string,
   includeFileName: boolean = true,
-  includeIndex?: boolean,
+  includeIndex?: boolean
 ) => {
   const promises = [];
   const downloadUrlPromises = [];
 
-  for (let [index, file] of files.entries()) {
+  for (let file of files) {
     let filePath = `/${path}/${
+      //@ts-ignore
       includeFileName ? file.name : includeIndex ? nanoid(5) : ""
     }`;
 

@@ -21,7 +21,6 @@ import React, {
 } from "react";
 import { useFormContext } from "react-hook-form";
 import { loadCategorySuggestion } from "./_actions";
-import useLoadCategorySuggestions from "@/app/client-apis/seller/category/useLoadCategorySuggestions";
 
 export type CategoryOption = {
   id: string;
@@ -63,8 +62,19 @@ const CategorySearch = ({
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
 
-  const { data: options, isLoading } =
-    useLoadCategorySuggestions(deferredQuery);
+  const [options, setOptions] = useState<CategoryOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadSuggestions = async () => {
+    setIsLoading(true);
+    const suggestions = await loadCategorySuggestion(deferredQuery);
+    setOptions(suggestions);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    loadSuggestions();
+  }, [deferredQuery]);
 
   return (
     <>
@@ -131,7 +141,7 @@ const CategorySearch = ({
                 <div className="flex w-full flex-col divide-y divide-gray-700">
                   {options &&
                     options.map((option) => (
-                      <div key={option?.id} className="p-2">
+                      <div key={option.id} className="p-2">
                         <Combobox.Option
                           className={
                             "rounded-lg p-3 data-[headlessui-state=active]:bg-skin-primary data-[headlessui-state=selected]:bg-skin-primary"
@@ -140,15 +150,15 @@ const CategorySearch = ({
                         >
                           <div className="w-full">
                             <h3 className="text-sm font-semibold text-white">
-                              {option?.title}
+                              {option.title}
                             </h3>
 
                             <div className="mt-3 flex flex-wrap items-center justify-start gap-3">
-                              {option?.path.map((pth, idx) => (
+                              {option.path.map((pth, idx) => (
                                 <BreadCrumb
                                   key={idx}
                                   start={idx === 0}
-                                  end={idx === option?.path?.length - 1}
+                                  end={idx === option.path.length - 1}
                                 >
                                   {pth}
                                 </BreadCrumb>
@@ -165,7 +175,7 @@ const CategorySearch = ({
 
               <div
                 className={`flex items-center justify-start gap-1 ${
-                  options && options.length > 0 && "border-t"
+                  options.length > 0 && "border-t"
                 } border-gray-700 p-4`}
               >
                 <p className="text-xs text-gray-300">
