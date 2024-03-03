@@ -1,5 +1,6 @@
 import { AvailableVariant } from "@/app/shop/onboarding/stock-your-shop/Variation";
 import { loadVariants } from "@/app/shop/onboarding/stock-your-shop/_actions";
+import fetcher from "@/utilities/fetcher";
 import { useQuery } from "@tanstack/react-query";
 
 const useLoadVariants = () => {
@@ -7,10 +8,11 @@ const useLoadVariants = () => {
     queryKey: ["use-load-variants"],
     queryFn: async () => {
       try {
-        const variants =
-          (await loadVariants()) as unknown as AvailableVariant[];
+        const { data: variants } = await fetcher().get("/variant");
         console.log({ variants });
-        return variants;
+
+        let v = variants as unknown as AvailableVariant[];
+        return v;
       } catch (error) {
         console.log({ error });
       }

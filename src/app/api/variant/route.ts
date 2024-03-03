@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import privateRoute from "../privateRoute";
-import { createVariant, getVariant } from "./variant.service";
+import { createVariant, getVariant, getVariants } from "./variant.service";
 
 /* 
     CREATE variant
@@ -56,27 +56,29 @@ export async function POST(request: NextRequest, response: NextResponse) {
 export async function GET(request: NextRequest, response: NextResponse) {
   return await privateRoute(async (user) => {
     try {
-      const variants = await getVariant({
-        where: {
-          id: "6553911e0dd6de8ca53377bd",
-        },
-        include: {
-          units: {
-            select: {
-              name: true,
-              si_unit: true,
-            },
-          },
+      const variants = await getVariants({
+        select: {
+          id: true,
+          name: true,
+          displayAs: true,
+          createdAt: true,
+          updatedAt: true,
           options: {
             select: {
               id: true,
               value: true,
             },
           },
+          units: {
+            select: {
+              name: true,
+              si_unit: true,
+            },
+          },
         },
       });
 
-      return NextResponse.json({ variants });
+      return NextResponse.json(variants);
     } catch (error) {
       return NextResponse.json({ error }, { status: 500 });
     }
